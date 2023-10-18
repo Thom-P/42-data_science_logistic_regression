@@ -119,7 +119,7 @@ def check_input(nums: np.array):
     """Verify args"""
     try:
         assert nums.size, "empty array."
-        assert type(nums[0]) is np.single or type(nums[0]) is np.double,\
+        assert type(nums[0]) is np.single or type(nums[0]) is np.double, \
             "need a numpy array of single or double."
         return True
     except AssertionError as err:

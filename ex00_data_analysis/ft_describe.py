@@ -2,7 +2,7 @@ import sys
 import numpy as np
 import pandas as pd
 from load_csv import ft_load
-from my_statistics import ft_count, ft_mean, ft_std, ft_quartile1,\
+from my_statistics import ft_count, ft_mean, ft_std, ft_quartile1, \
     ft_quartile3, ft_median, ft_min, ft_max
 
 
@@ -20,8 +20,11 @@ def main(argv):
             if df[column].dtype != np.float64:
                 continue
             column_np = df[column].dropna().to_numpy()
+            if column_np.size == 0:  # if empty, skip
+                continue
             stats_df[column] = [myDict[key](column_np) for key in myDict]
         print(stats_df)
+        #  print(df.describe())  #  for comparison with lib equivalent
         return 0
 
     except Exception as err:
