@@ -13,6 +13,7 @@ def main():
         gry = df[df['Hogwarts House'] == 'Gryffindor']
         huf = df[df['Hogwarts House'] == 'Hufflepuff']
 
+        plt.style.use('dark_background')
         fig, ax = plt.subplots(3, 5, figsize=(19, 10))  # size in 100s of pixs
         n_bins = 10
         course_list = [col for col in df if df[col].dtype == np.float64]
@@ -38,7 +39,8 @@ def main():
         ax[-1, -1].axis('off')  # turn off last two subplots (unused)
         ax[-1, -2].axis('off')
         fig.tight_layout()
-        plt.show()
+        fig.savefig('histogram.png')
+        # plt.show()
         return 0
 
     except Exception as err:
