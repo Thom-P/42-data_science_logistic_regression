@@ -1,4 +1,5 @@
 import sys
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
@@ -29,7 +30,7 @@ def make_figure(courses, house_names, house_dfs):
     ax[-1, -1].axis('off')  # turn off last two subplots (unused)
     ax[-1, -2].axis('off')
     fig.tight_layout()
-    fig.savefig('histogram.png')
+    fig.savefig('./figures/histogram.png')
     # plt.show()
 
 
@@ -46,6 +47,8 @@ def main():
         house_dfs = [df.loc[df['Hogwarts House'] == name, courses]
                      for name in house_names]
 
+        if not os.path.exists('figures'):
+            os.makedirs('figures')
         make_figure(courses, house_names, house_dfs)
         return 0
 

@@ -1,4 +1,5 @@
 import sys
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
@@ -39,7 +40,7 @@ def make_figures(courses, house_names, house_dfs):
     ax_array[-2].axis('off')  # turn off unused axes
     for ind, fig in enumerate(figs):
         fig.tight_layout()
-        fig.savefig(f'pair_plot{ind + 1}.png')
+        fig.savefig(f'./figures/pair_plot{ind + 1}.png')
     # plt.show()
 
 
@@ -57,6 +58,8 @@ def main():
         house_dfs = [df.loc[df['Hogwarts House'] == name, courses]
                      for name in house_names]
 
+        if not os.path.exists('figures'):
+            os.makedirs('figures')
         make_figures(courses, house_names, house_dfs)
         return 0
 

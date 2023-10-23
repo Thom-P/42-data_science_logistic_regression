@@ -1,4 +1,5 @@
 import sys
+import os
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from load_csv import ft_load
@@ -17,7 +18,7 @@ def make_figure(courses, house_names, house_dfs):
     ax.set_xlabel('Score 1')
     ax.set_ylabel('Score 2')
 
-    fig.savefig('scatter_plot.png')
+    fig.savefig('./figures/scatter_plot.png')
     # plt.show()
 
 
@@ -34,6 +35,8 @@ def main():
         house_dfs = [df.loc[df['Hogwarts House'] == name, courses]
                      for name in house_names]
 
+        if not os.path.exists('figures'):
+            os.makedirs('figures')
         make_figure(courses, house_names, house_dfs)
         return 0
 
