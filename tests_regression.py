@@ -11,7 +11,7 @@ from my_statistics import ft_mean, ft_std
 #def main():
 #    try:
 
-random.seed(42) # to keep things reproducible for now
+#random.seed(42) # to keep things reproducible for now
 df = ft_load('./datasets/dataset_train.csv')
 # print(df)
 
@@ -62,12 +62,17 @@ x = df_train[courses].to_numpy().transpose()
 #ax.plot(x.T)
 #plt.show()
 
+x_means = np.empty(n_features)
+x_stds = np.empty(n_features)
+
 x_scaled = np.empty(x.shape)
-for i_row in range(x.shape[0]):
+for i_row in range(n_features):
     row = x[i_row, :]
     row_mean = ft_mean(row)
     row_std = ft_std(row)
     x_scaled[i_row, :] = (row - row_mean) / row_std
+    x_means[i_row] = row_mean
+    x_stds[i_row] = row_std
 
 #fig, ax = plt.subplots()
 #ax.plot(x_scaled.T)
@@ -103,7 +108,7 @@ def grad(thetaT, X, y, n_student):
 
 # test descent
 alpha = 0.5
-n_iter = 200
+n_iter = 500
 cost_evol_arr = np.empty((n_iter + 1, 4))
 
 for h in range(4):
@@ -119,25 +124,41 @@ for h in range(4):
 #ax.plot(cost_evol_arr, '-+')
 #plt.show()
 
-## check self application on train set for sake of testing
-y_est_array = np.empty((len(houses), n_train))
+## check performance on fake test set
+x_test = df_test[courses].to_numpy().transpose()
+
+x_test_scaled = np.empty(x_test.shape)
+for i_row in range(n_features):
+    row = x_test[i_row, :]
+    x_test_scaled[i_row, :] = (row - x_means[i_row]) / x_stds[i_row]
+
+X_test = np.vstack((np.ones((1, n_test)), x_test_scaled))
+
+y_est_array = np.empty((len(houses), n_test))
 for h in range(4):
-    y_est_array[h, :] = h_theta(thetaT_arr[[h], :], X)
+    y_est_array[h, :] = h_theta(thetaT_arr[[h], :], X_test)
     #plt.plot(y_est_array[h, :])
 #plt.show()
 # get estimated house index
 house_ind_est = np.argmax(y_est_array, axis=0)
 
 ## get real house ind
-house_ind_real = np.empty(n_train)
-for i in range(n_train):
-    house_ind_real[i] = list(houses).index(df_train.iloc[i]['Hogwarts House'])
+house_ind_real = np.empty(n_test, dtype='int64')
+for i in range(n_test):
+    house_ind_real[i] = list(houses).index(df_test.iloc[i]['Hogwarts House'])
 
-fig, ax = plt.subplots()
-ax.plot(house_ind_real, '-')
-#ax.plot(y_est_array.T)
-ax.plot(house_ind_est, 'or')
-plt.show()
+#fig, ax = plt.subplots()
+#ax.plot(house_ind_real, '-')
+#ax.plot(house_ind_est, 'or')
+#plt.show()
+
+accuracy = 0
+for i in range(n_test):
+    if house_ind_real[i] == house_ind_est[i]:
+        accuracy += 1
+accuracy /= n_test
+
+print(f'Accuracy: {accuracy * 100}%')
 
 
 #        return 0
