@@ -8,7 +8,7 @@ The Sorting Hat of the infamous Hogwarts school of wizards is not longer working
 
 ## Task 1: Data Analysis
 
-We create a program for computing basic statistics of our training dataset. For each of the 13 courses/fields, we compute the number of data points (count), mean score, standard deviation, minimum, maximum, median, first and third quartile. Note that this program is basically a reimplementation of the pandas builtin describe() function (that we are not allowed to use).
+We create a program for computing basic statistics of our training dataset. For each of the 13 courses/fields, we compute the number of data points (count), mean score, standard deviation, minimum, maximum, median, first and third quartile. Note that this program is basically a re-implementation of the pandas builtin describe() function (that we are not allowed to use).
 
 ```sh
 python ft_describe.py ../datasets/dataset_train.csv
@@ -29,7 +29,7 @@ Max    104956.000000  1016.211940    11.612895  ...                   3.056546  
 
 We note the wide discrepancy of the score ranges used in different courses. This already gives us a hint that feature scaling will be crucial for the convergence of the gradient descent.
 
-## Task 2: Data Visualisation
+## Task 2: Data Visualization
 
 ### Histograms of score distribution
 
@@ -53,7 +53,7 @@ python pair_plot.py
 
 ![pair plots](./figures/pair_plot1.png)
 
-We observe above the first 20 pair plots. Let's first focus on the pair plot corresponding to the two courses identified above as having a homogeneous score distribution across the different houses: _Arithmacy_ - _Care of Magical Creatures_. The 4 clouds of points are fully superimposed and do not allow to discriminate between their corresponding 4 houses. We thus discard those two features from the dataset. We also notice that two features are perfectly (anti-)correlated and thus fully redundant: _Astronomy_ and _Defense Against the Dark Arts_. We remove the _Astronomy_ feature from our dataset.
+We observe above the first 20 pair plots. Let's first focus on the pair plot corresponding to the two courses identified above as having a homogeneous score distribution across the different houses: _Arithmancy_ - _Care of Magical Creatures_. The 4 clouds of points are fully superimposed and do not allow to discriminate between their corresponding 4 houses. We thus discard those two features from the dataset. We also notice that two features are perfectly (anti-)correlated and thus fully redundant: _Astronomy_ and _Defense Against the Dark Arts_. We remove the _Astronomy_ feature from our dataset.
 
 ## Task 3: Logistic Regression
 
@@ -71,27 +71,41 @@ For a given student $j$, a prediction consists in computing an output $y_j$ (in 
 Let's first examine the form of linear regression prediction, as the logistic regression can be viewed as an extension of this approach. In linear regression, a set of $m + 1$ weights $\theta_i$ is used to construct a prediction output $y_j$ as a linear combination of the features:
 $$y_j = \theta_0 + \theta_1 x_{1j} + \theta_2 x_{2j} + ... + \theta_m x_{mj}$$
 or in the more compact matrix form: 
-$$\bm{y} = \bm{\theta^T X}$$
-where the first row of $\bm{X}$ of size $(m + 1, n)$ is a row vector of $n$ ones $[1, 1, ..., 1]$ to allow the addition of the constant term $\theta_0$, and the rest of the matrix contains the scaled $x_{ij}$ elements. $\theta$ is a column vector of the $m + 1$ weights to be tuned/learned, and $\bm{y}$ a row vector of the $n$ predictions.
+$$\mathbf{\hat{y}} = \mathbf{\theta^T X}$$
+where the first row of $\mathbf{X}$ of size $(m + 1, n)$ is a row vector of $n$ ones $[1, 1, ..., 1]$ to allow the addition of the constant term $\theta_0$, and the rest of the matrix contains the scaled $x_{ij}$ elements. $\theta$ is a column vector of the $m + 1$ weights to be tuned/learned, and $\mathbf{\hat{y}}$ a row vector of the $n$ predictions.
 The output values $y_j$ of linear regression are unbounded. However, in logistic regression, these values should be bounded between 0 and 1 as $y_j$ is interpreted as the probability of a data point (a student) belonging to a given class (a house).
 The prediction of logistic regression is therefore expressed as:
-$$\bm{y} = h(\bm{\theta^T X})$$
+$$\mathbf{\hat{y}} = h(\mathbf{\theta^T X})$$
 where $h(x) = \frac{1}{1 + e^{-x}}$ is called the logistic (or sigmoid) function, and whose output is bounded between 0 and 1.
 
-In the one vs all approach that we implement, we need to build 4 different classifiers, each of which will outpuyt the probability of belonging to a given house. To get our final prediction of which house a student belongs to, we select the house for which the probabiliyt estimated is the highest. From our training dataset, we create for different objective vectors y consisting of 0 or 1 depending on the appartenence or not of each students to the correspponding house. These vectors form the "labels" for our supervised learning approach.
+The logistic function is appropriate to separate data into two categories, depending whether its output is closer to 0 or 1. However, in our case, the data need to be sorted into 4 different classes (houses). This multi-class classification problem can be solved using the one vs all approach, which requires as many classifier as there are classes. Each classifier consists of a set of weights $\theta_i$ for which a prediction $y_j$ is interpreted as the probability of belonging to a certain class (house). To get our final prediction of which house a student belongs to, we select the house for which the estimated probability is the highest. From our training dataset, we create four different objective row vectors $\mathbf{y}$ consisting of 1 or 0 depending on whether or not each student belongs to the corresponding house. These vectors form the "labels" of our training dataset for our supervised learning approach.
 
 ### Cost function
 
-The cost function tells us, for a given set of weights theta, how well our estimation yest fits the real outputs yreal. While that cost function has a simple form for linear regression (namely sum square diff), it can be shown that this form is unsuited for logistic regression convergence as it presents many local minimas. Instead, the cost function that we will use is:
-J() = ...
+The cost function $J(\mathbf{\theta})$ tells us, for a given set of weights theta, how well our estimation $\mathbf{\hat{y}}$ fits the labels $\mathbf{y}$. In linear regression, such cost function is usually as simple as the average of the squared distance between $\mathbf{\hat{y}}$ and $\mathbf{y}$. However, it can be shown that a cost function of this form is unsuited for logistic regression as it presents many local minima. Instead, a better suited cost function is computed as:
+$$J(\mathbf{\theta}) = -\frac{1}{m} \sum_{j = 1}^{n} [\ y_j \{ \mathrm{log} [\ h(\mathbf{\theta^T X}) ]\ \}_j + (1 - y_j) \{ \mathrm{log} [\ 1 - h(\mathbf{\theta^T X}) ]\ \}_j ]\ $$
+$$= \mathrm{log} [\ h(\mathbf{\theta^T X}) ]\ \mathbf{y^T} + \mathrm{log} [\ 1 - h(\mathbf{\theta^T X}) ]\ (1 - \mathbf{y^T}) $$
 
-### Gradient
-and the corrsponding gradient:
+SHOULD PREPLACE WITH Y_EST FOR SMALLER FORM
 
-The idea of gradient descent is to iteratively update our weights theta, so that we follow a path towards the minimum of the cost function J. Alpha should be small enough to ensure stability, and large enough to ensure rapidity. In practice we test various alpha across several order of maginitude and look at the corresponding evolution for the cost function along iterations. A typical converging cost function look line the ones below (alpha=0.5):
+### Gradient descent
+
+For each of the 4 classifiers, we are looking at computing a set of weights $\mathbf{theta}$ that minimizes the cost function $J$. $J$ can be seen as a concave hyper-surface of which we aim to reach the bottom. The idea of gradient descent is to iteratively walk downhill in the direction of the steepest slope (i.e. opposite the gradient direction).
+
+The gradient $\frac{\partial J}{\partial \theta_i}$, of the above cost function can be shown to be equal to:
+$$\frac{\partial J}{\partial \theta_i} = \frac{1}{n} \sum_{j=1}^{n} \{ h(\mathbf{\theta^T X}) - \mathbf{y} \}_j X_{ij}$$
+
+The iterative descent algorithm is simply:
+$$ \theta_i := \theta_i - \alpha \frac{\partial J}{\partial \theta_i}$$
+where alpha is a parameter that controls the size of the steps. 
+Alpha should be small enough to ensure stability, i.e., to guarantee that each step we take reduces the value of the cost function. But alpha should also be large enough to ensure convergence towards the minimum in a reasonable time. In practice, we test various alpha across several order of magnitudes and look at the evolution of the cost function along iterations. A typical converging cost function looks line the ones below (alpha=0.5, 200 iterations):
 
 fig here
 
+The weights of 4 classifiers are saved into a file as well as the scaling values...
 
+## Task 4: Application to the test set:
+
+forward prop appl to test set.
 
 
