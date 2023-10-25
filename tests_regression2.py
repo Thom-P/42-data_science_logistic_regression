@@ -1,8 +1,6 @@
 import sys
 import os
 import random
-import math
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from load_csv import ft_load
@@ -11,7 +9,7 @@ from my_statistics import ft_mean, ft_std
 #def main():
 #    try:
 
-random.seed(42) # to keep things reproducible for now
+#random.seed(42) # to keep things reproducible for now
 df = ft_load('./datasets/dataset_train.csv')
 # print(df)
 
@@ -46,17 +44,9 @@ ind_test = set(random.sample(range(n_total), n_test))
 ind_train = set(list(range(n_total))) - ind_test
 df_test = df_clean.iloc[list(ind_test), :]
 df_train = df_clean.iloc[list(ind_train), :]
-
-# equation formulation following coursera course:
-# theta_T * X = y
-# theta_T is a row vector of weights (transpose of column vec theta)
-# X is a m*n matrix for m features (courses) and n data points (students)
-# first row should be all 1 (for contanst term theta0)
-# y is a row vector of binary value (is or not part of given house)
  
 ## Extract and scale features x (scores)
 x = df_train[courses].to_numpy().transpose()
-#print(x.T)
 #print(x.shape)
 #fig, ax = plt.subplots()
 #ax.plot(x.T)
