@@ -78,31 +78,35 @@ The prediction of logistic regression is therefore expressed as:
 $$\mathbf{\hat{y}} = h(\mathbf{\theta^T X})$$
 where $h(x) = \frac{1}{1 + e^{-x}}$ is called the logistic (or sigmoid) function, and whose output is bounded between 0 and 1.
 
-The logistic function is appropriate to separate data into two categories, depending whether its output is closer to 0 or 1. However, in our case, the data need to be sorted into 4 different classes (houses). This multi-class classification problem can be solved using the one vs all approach, which requires as many classifier as there are classes. Each classifier consists of a set of weights $\theta_i$ for which a prediction $y_j$ is interpreted as the probability of belonging to a certain class (house). To get our final prediction of which house a student belongs to, we select the house for which the estimated probability is the highest. From our training dataset, we create four different objective row vectors $\mathbf{y}$ consisting of 1 or 0 depending on whether or not each student belongs to the corresponding house. These vectors form the "labels" of our training dataset for our supervised learning approach.
+The logistic function is appropriate to separate data into two categories, depending whether its output is closer to 0 or 1. However, in our case, the data need to be sorted into 4 different classes (houses). This multi-class classification problem can be solved using the one vs all approach, which requires as many classifier as there are classes. Each classifier consists of a set of $m + 1$ weights $\theta_i$ for which a prediction $y_j$ is interpreted as the probability of data point (student) $j$ belonging to a certain class (house). To get our final prediction of which house a student belongs to, we select the house for which the estimated probability is the highest. From our training dataset, we create four different objective row vectors $\mathbf{y}$ consisting of 1 or 0 depending on whether or not each student belongs to the corresponding house. These vectors form the "labels" of our training dataset for our supervised learning approach.
 
 ### Cost function
 
-The cost function $J(\mathbf{\theta})$ tells us, for a given set of weights theta, how well our estimation $\mathbf{\hat{y}}$ fits the labels $\mathbf{y}$. In linear regression, such cost function is usually as simple as the average of the squared distance between $\mathbf{\hat{y}}$ and $\mathbf{y}$. However, it can be shown that a cost function of this form is unsuited for logistic regression as it presents many local minima. Instead, a better suited cost function is computed as:
-$$J(\mathbf{\theta}) = -\frac{1}{m} \sum_{j = 1}^{n} [\ y_j \{ \mathrm{log} [\ h(\mathbf{\theta^T X}) ]\ \}_j + (1 - y_j) \{ \mathrm{log} [\ 1 - h(\mathbf{\theta^T X}) ]\ \}_j ]\ $$
-$$= \mathrm{log} [\ h(\mathbf{\theta^T X}) ]\ \mathbf{y^T} + \mathrm{log} [\ 1 - h(\mathbf{\theta^T X}) ]\ (1 - \mathbf{y^T}) $$
-
-SHOULD PREPLACE WITH Y_EST FOR SMALLER FORM
+The cost function $J(\mathbf{\theta})$ tells us, for a given set of weights $\mathbf{\theta}$, how well our estimation $\mathbf{\hat{y}}$ fits the labels $\mathbf{y}$. In linear regression, such cost function is usually as simple as the average of the squared distance between $\mathbf{\hat{y}}$ and $\mathbf{y}$. However, it can be shown that a cost function of this form is unsuited for logistic regression as it presents many local minima. Instead, a better suited cost function is computed as:
+$$J(\mathbf{\theta}) = -\frac{1}{m} \sum_{j = 1}^{n} [\ y_j \mathrm{log}(\hat{y}_j)  + (1 - y_j) \mathrm{log}(1 - \hat{y}_j) ]\ $$
+$$= \mathrm{log} (\mathbf{\hat{y}}) \mathbf{y^T} + \mathrm{log} (1 - \mathbf{\hat{y}}) (1 - \mathbf{y^T}) $$
+with $\mathbf{\hat{y}} = h(\mathbf{\theta^T X})$.
 
 ### Gradient descent
 
-For each of the 4 classifiers, we are looking at computing a set of weights $\mathbf{theta}$ that minimizes the cost function $J$. $J$ can be seen as a concave hyper-surface of which we aim to reach the bottom. The idea of gradient descent is to iteratively walk downhill in the direction of the steepest slope (i.e. opposite the gradient direction).
+For each of the 4 classifiers, we are looking at computing a set of weights $\mathbf{\theta}$ that minimizes the cost function $J(\mathbf{\theta})$. $J(\mathbf{\theta})$ can be seen as a concave hyper-surface of which we aim to reach the bottom. The idea of gradient descent is to iteratively walk downhill in the direction of the steepest slope (i.e. opposite the gradient direction).
 
-The gradient $\frac{\partial J}{\partial \theta_i}$, of the above cost function can be shown to be equal to:
-$$\frac{\partial J}{\partial \theta_i} = \frac{1}{n} \sum_{j=1}^{n} \{ h(\mathbf{\theta^T X}) - \mathbf{y} \}_j X_{ij}$$
-
-The iterative descent algorithm is simply:
+The gradient $\frac{\partial J}{\partial \theta_i}$ of the above cost function can be shown to be equal to:
+$$\frac{\partial J}{\partial \theta_i} = \frac{1}{n} \sum_{j=1}^{n} (\hat{y}_j - y_j) X_{ij}$$
+for $i = 0$ to $m$, or
+$$\mathbf{\nabla} J(\mathbf{\theta}) = \frac{1}{n} \mathbf{X} [\ \mathbf{\hat{y}} - \mathbf{y} ]\ ^T$$
+using matrix notation.
+The iterative descent algorithm consists of iteratively updating $\mathbf{\theta}$:
 $$ \theta_i := \theta_i - \alpha \frac{\partial J}{\partial \theta_i}$$
-where alpha is a parameter that controls the size of the steps. 
-Alpha should be small enough to ensure stability, i.e., to guarantee that each step we take reduces the value of the cost function. But alpha should also be large enough to ensure convergence towards the minimum in a reasonable time. In practice, we test various alpha across several order of magnitudes and look at the evolution of the cost function along iterations. A typical converging cost function looks line the ones below (alpha=0.5, 200 iterations):
+for $i = 0$ to $m$, or
+$$ \mathbf{\theta} := \mathbf{\theta} -\alpha \mathbf{\nabla} J(\mathbf{\theta})$$
+using matrix notation.
+$\alpha$ is a parameter that controls the size of the steps. $\alpha$ should be small enough to ensure stability, i.e., to guarantee that each step we take reduces the value of the cost function. But $\alpha$ should also be large enough to ensure convergence towards the minimum in a reasonable time. In practice, we test various $\alpha$ values across several order of magnitudes and look at the evolution of the cost function $J(\mathbf{\theta})$ along iterations. A typical converging cost function looks line the ones below ($\alpha$=0.5, 200 iterations):
 
-fig here
+fig here.
 
-The weights of 4 classifiers are saved into a file as well as the scaling values...
+Note that this figure shows the convergence of the 4 classifiers corresponding to the 4 houses
+The weights of 4 classifiers are saved into a file as well as the scaling values (mean and std) that are used to normalize the raw student scores.
 
 ## Task 4: Application to the test set:
 
