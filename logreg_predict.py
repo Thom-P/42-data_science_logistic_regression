@@ -4,11 +4,15 @@ import numpy as np
 from load_csv import ft_load
 from logreg_train import h_theta, cost, grad
 
-#REPLACE NANS WITH ZEROS IN TEST SET
 def main():
     try:    
-        ##load the coeffs in text file
-        thetaT = np.loadtxt('weights_theta.txt')
+        ##load the coeffs and scaling params from bin file
+        #thetaT = np.loadtxt('weights_theta.txt')
+        
+        with np.load('weights_theta.npz') as data:
+            thetaT = data['thetaT_arr']
+            x_means = data['x_means']
+            x_stds = data['x_stds']
 
         # data_dir = './datasets'
         data_dir = './fake_datasets'
@@ -21,6 +25,9 @@ def main():
         courses = [col for col in df_test if df_test[col].dtype == np.float64 and col != 'Hogwarts House'] # nan is float
         #print(courses)
 
+        # replace missing scores/nans by 0
+        #df_test[courses] = df_test[courses].fillna(0)
+
         # define list of houses (sort to keep same order as in train)
         houses = ['Gryffindor', 'Hufflepuff', 'Ravenclaw', 'Slytherin']
         #print(houses)
@@ -31,12 +38,18 @@ def main():
         # Also remove one of the two anticorrelated one (redundant info) (Astronomy and Defense against the darks arts)
         courses.remove('Astronomy')
         #print(courses)
+        n_courses = len(courses)
 
         ## make predictions
-        x_test = df_test[courses].to_numpy().transpose()
-        X_test = np.vstack((np.ones((1, n_test)), x_test))
+        x_raw = df_test[courses].to_numpy().transpose()
+        x_scaled = np.empty(x_raw.shape)
+        for i_row in range(n_courses):
+            x_scaled[i_row, :] = (x_raw[i_row, :] - x_means[i_row]) / x_stds[i_row]
+        #replace here nans with 0
+        np.nan_to_num(x_scaled, copy=False)
+        X_test = np.vstack((np.ones((1, n_test)), x_scaled))
         y_est_array = h_theta(thetaT, X_test)
-
+        
         # get estimated house index
         house_ind_est = np.argmax(y_est_array, axis=0)
 

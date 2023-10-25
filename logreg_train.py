@@ -104,15 +104,16 @@ def main():
         #fig, ax = plt.subplots()
         #ax.plot(cost_evol_arr, '-+')
         #plt.show()
-        # create a theta_eff set of weight corrected for feature scaling and allowing for direct use of raw x
         
-        x_means_augmented = np.insert(x_means, 0, 0)
-        x_std_augmented = np.insert(x_stds, 0, 1)
-        thetaT_eff = thetaT_arr / x_std_augmented
-        thetaT_eff[:, 0] = thetaT_eff[:, 0] - (thetaT_eff @ x_means_augmented.reshape(-1, 1)).squeeze() # -1 finds the length
+        # create a theta_eff set of weight corrected for feature scaling and allowing for direct use of raw x
+        # unused in the end because only work when no missing features in test set
+        #x_means_augmented = np.insert(x_means, 0, 0)
+        #x_std_augmented = np.insert(x_stds, 0, 1)
+        #thetaT_eff = thetaT_arr / x_std_augmented
+        #thetaT_eff[:, 0] = thetaT_eff[:, 0] - (thetaT_eff @ x_means_augmented.reshape(-1, 1)).squeeze() # -1 finds the length
 
-        ## save the coeffs in text file
-        np.savetxt('weights_theta.txt', thetaT_eff)
+        ## save the coeffs and scaling params in binary file
+        np.savez('weights_theta', thetaT_arr=thetaT_arr, x_means=x_means, x_stds=x_stds)
 
         return 0
 
