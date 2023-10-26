@@ -97,9 +97,9 @@ for $i = 0$ to $m$, or
 $$\mathbf{\nabla} J(\mathbf{\theta}) = \frac{1}{n} \mathbf{X} [\ \mathbf{\hat{y}} - \mathbf{y} ]\ ^T$$
 using matrix notation.
 The iterative descent algorithm consists of iteratively updating $\mathbf{\theta}$:
-$$ \theta_i := \theta_i - \alpha \frac{\partial J}{\partial \theta_i}$$
+$$\theta_i := \theta_i - \alpha \frac{\partial J}{\partial \theta_i}$$
 for $i = 0$ to $m$, or
-$$ \mathbf{\theta} := \mathbf{\theta} -\alpha \mathbf{\nabla} J(\mathbf{\theta})$$
+$$\mathbf{\theta} := \mathbf{\theta} -\alpha \mathbf{\nabla} J(\mathbf{\theta})$$
 using matrix notation.
 $\alpha$ is a parameter that controls the size of the steps. $\alpha$ should be small enough to ensure stability, i.e., to guarantee that each step we take reduces the value of the cost function. But $\alpha$ should also be large enough to ensure convergence towards the minimum in a reasonable time. In practice, we test various $\alpha$ values across several order of magnitudes and look at the evolution of the cost function $J(\mathbf{\theta})$ along iterations. A typical converging cost function looks line the ones below ($\alpha$=0.5, 200 iterations):
 
