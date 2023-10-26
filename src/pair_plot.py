@@ -1,9 +1,9 @@
 import sys
 import os
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-from load_csv import ft_load
 
 
 def make_scatter_plots(house_dfs, course_pairs, ax_array, house_names, colors):
@@ -48,7 +48,7 @@ def main():
     """Output every possible scatter plot of student scores by houses,
     for every possible course pairing"""
     try:
-        df = ft_load('datasets/dataset_train.csv')
+        df = pd.read_csv('datasets/dataset_train.csv', index_col=0)
 
         # get list of courses
         courses = [col for col in df if df[col].dtype == np.float64]

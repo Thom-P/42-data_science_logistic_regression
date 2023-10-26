@@ -1,10 +1,9 @@
 import os, sys
 import pandas as pd
 import numpy as np
-from load_csv import ft_load
 
-df_predict = ft_load('./fake_datasets/houses.csv')
-df_truth = ft_load('./fake_datasets/expected_result.csv')
+df_predict = pd.read_csv(os.path.join('fake_datasets', 'houses.csv'), index_col=0)
+df_truth = pd.read_csv(os.path.join('fake_datasets', 'expected_result.csv'), index_col=0)
 
 n_test = df_truth.shape[0] 
 accuracy = 0

@@ -11,7 +11,7 @@ The Sorting Hat of the infamous Hogwarts school of wizards is not longer working
 We create a program for computing basic statistics of our training dataset. For each of the 13 courses/fields, we compute the number of data points (count), mean score, standard deviation, minimum, maximum, median, first and third quartile. Note that this program is basically a re-implementation of the pandas builtin describe() function (that we are not allowed to use).
 
 ```sh
-python ft_describe.py ../datasets/dataset_train.csv
+python src/ft_describe.py datasets/dataset_train.csv
 ```
 
 Output:
@@ -36,7 +36,7 @@ We note the wide discrepancy of the score ranges used in different courses. This
 To get a better sense of the score distribution in the different courses, and across the 4 houses, we implement a stacked histogram array. The output histogram is saved in the _figures_ directory
 
 ```sh
-Python histogram.py
+python src/histogram.py
 ```
 
 ![stacked histograms](./figures/histogram.png)
@@ -48,7 +48,7 @@ We observe that the course _Care of Magical Creatures_ has the most homogeneous 
 To study the possible score correlation between different courses, as well as their combined effect on house attribution, we produce scatter plots for each possible pair of course, that is 78 (13 x 12 / 2) scatter plots visualized across 4 different figures.
 
 ```sh
-python pair_plot.py
+python src/pair_plot.py
 ```
 
 ![pair plots](./figures/pair_plot1.png)
@@ -94,7 +94,7 @@ For each of the 4 classifiers, we are looking at computing a set of weights $\ma
 The gradient $\frac{\partial J}{\partial \theta_i}$ of the above cost function can be shown to be equal to:
 $$\frac{\partial J}{\partial \theta_i} = \frac{1}{n} \sum_{j=1}^{n} (\hat{y}_j - y_j) X_{ij}$$
 for $i = 0$ to $m$, or
-$$\mathbf{\nabla} J(\mathbf{\theta}) = \frac{1}{n} \mathbf{X} [\ \mathbf{\hat{y}} - \mathbf{y} ]\ ^T$$
+$$\mathbf{\nabla} J(\mathbf{\theta}) = \frac{1}{n} \mathbf{X} [\ \mathbf{\hat{y}} - \mathbf{y} ]\^T$$
 using matrix notation.
 The iterative descent algorithm consists of iteratively updating $\mathbf{\theta}$:
 $$\theta_i := \theta_i - \alpha \frac{\partial J}{\partial \theta_i}$$

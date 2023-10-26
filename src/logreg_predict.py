@@ -1,24 +1,27 @@
 import os, sys
 import pandas as pd
 import numpy as np
-from load_csv import ft_load
 from logreg_train import h_theta, cost, grad
 
-def main():
+def main(argv):
     try:    
         ##load the coeffs and scaling params from bin file
         #thetaT = np.loadtxt('weights_theta.txt')
-        
-        with np.load('weights_theta.npz') as data:
+
+        if len(argv) == 1:
+            data_dir = 'datasets'
+        else:
+            assert len(argv) == 2 and argv[1] == "--fake", "only supported option is --fake to train on fake dataset"
+            data_dir = 'fake_datasets'
+
+        with np.load(os.path.join(data_dir, 'weights_theta.npz')) as data:
             thetaT = data['thetaT_arr']
             x_means = data['x_means']
             x_stds = data['x_stds']
 
-        # data_dir = './datasets'
-        data_dir = './fake_datasets'
         
         ## load test set
-        df_test = ft_load(os.path.join(data_dir, 'dataset_test.csv'))
+        df_test = pd.read_csv(os.path.join(data_dir, 'dataset_test.csv'), index_col=0)
         n_test = df_test.shape[0]
 
         # get list of courses
@@ -64,4 +67,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(main(sys.argv))

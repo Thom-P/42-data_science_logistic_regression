@@ -1,9 +1,9 @@
 import sys
 import os
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-from load_csv import ft_load
 
 
 def make_figure(courses, house_names, house_dfs):
@@ -11,7 +11,7 @@ def make_figure(courses, house_names, house_dfs):
     colors = list(mcolors.BASE_COLORS.keys())
 
     plt.style.use('dark_background')
-    fig, ax = plt.subplots(3, 5, figsize=(19, 10))  # size in 100s of pixs
+    fig, ax = plt.subplots(3, 5, figsize=(19, 10))  # size in 100s of pixels
     n_bins = 10
 
     for index, course in enumerate(courses):
@@ -37,7 +37,7 @@ def make_figure(courses, house_names, house_dfs):
 def main():
     """Make a histogram array of all course score distributions"""
     try:
-        df = ft_load('datasets/dataset_train.csv')
+        df = pd.read_csv('datasets/dataset_train.csv', index_col=0)
 
         # get list of courses
         courses = [col for col in df if df[col].dtype == np.float64]

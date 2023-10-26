@@ -1,8 +1,8 @@
 import sys
 import os
+import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-from load_csv import ft_load
 
 
 def make_figure(courses, house_names, house_dfs):
@@ -26,7 +26,7 @@ def main():
     """Create a single scatter plot of the two (anti)correlated features:
     Astronomy and Defense Against the Dark Arts)"""
     try:
-        df = ft_load('datasets/dataset_train.csv')
+        df = pd.read_csv('datasets/dataset_train.csv', index_col=0)
 
         courses = ('Astronomy', 'Defense Against the Dark Arts')
 

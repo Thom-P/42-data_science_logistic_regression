@@ -2,8 +2,8 @@ import sys
 import os
 import random
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
-from load_csv import ft_load
 from my_statistics import ft_mean, ft_std
 
 
@@ -22,12 +22,18 @@ def grad(thetaT, X, y, n_student):
     return 1 / n_student * (h_theta(thetaT, X) - y) @ X.T
 
 
-def main():
+def main(argv):
     try:
 
         random.seed(42) # to keep things reproducible for now
-        #df = ft_load('./datasets/dataset_train.csv')
-        df = ft_load('./fake_datasets/dataset_train.csv')
+        
+        if len(argv) == 1:
+            data_dir = 'datasets'
+        else:
+            assert len(argv) == 2 and argv[1] == "--fake", "only supported option is --fake to train on fake dataset"
+            data_dir = 'fake_datasets'
+        
+        df = pd.read_csv(os.path.join(data_dir, 'dataset_train.csv'))
         # print(df)
 
         # get list of courses
@@ -113,7 +119,7 @@ def main():
         #thetaT_eff[:, 0] = thetaT_eff[:, 0] - (thetaT_eff @ x_means_augmented.reshape(-1, 1)).squeeze() # -1 finds the length
 
         ## save the coeffs and scaling params in binary file
-        np.savez('weights_theta', thetaT_arr=thetaT_arr, x_means=x_means, x_stds=x_stds)
+        np.savez(os.path.join(data_dir,'weights_theta'), thetaT_arr=thetaT_arr, x_means=x_means, x_stds=x_stds)
 
         return 0
 
@@ -123,4 +129,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(main(sys.argv))

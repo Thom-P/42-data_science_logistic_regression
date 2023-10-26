@@ -2,14 +2,14 @@ import sys
 import os
 import random
 import numpy as np
-from load_csv import ft_load
+import pandas as pd
+
+random.seed(13) # to keep things reproducible for now
+df = pd.read_csv(os.path.join('datasets', 'dataset_train.csv'), index_col=0)
 
 fake_dir = 'fake_datasets'
 if not os.path.exists(fake_dir):
     os.makedirs(fake_dir)
-
-random.seed(42) # to keep things reproducible for now
-df = ft_load('./datasets/dataset_train.csv')
 
 ## Separate training data into train and test sets (80/20)
 n_total = df.shape[0]
@@ -27,7 +27,7 @@ df_train.to_csv(os.path.join(fake_dir, 'dataset_train.csv'), index_label='Index'
 ## save houses (expected answers) from test set in separate file
 df_result = df_test['Hogwarts House']
 df_result.reset_index(drop=True, inplace=True)
-#df_result.to_csv(os.path.join(fake_dir, 'expected_result.csv'), index_label='Index')
+df_result.to_csv(os.path.join(fake_dir, 'expected_result.csv'), index_label='Index')
 
 ## remove houses from test set and save
 df_test.loc[:, 'Hogwarts House'] = np.nan
