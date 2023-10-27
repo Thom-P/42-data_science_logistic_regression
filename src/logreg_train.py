@@ -34,13 +34,13 @@ def scale_features(df_train, courses, n_features):
         x_stds[i_row] = ft_std(x[i_row, :])
         x_scaled[i_row, :] = (x[i_row, :] - x_means[i_row]) / x_stds[i_row]
 
-    fig, ax = plt.subplots(1, 2, figsize=(12, 6))
+    fig, ax = plt.subplots(1, 2, figsize=(8, 4))
     ax[0].plot(x.T)
     ax[0].set_title('Unscaled features')
-    ax[0].legend(courses)
+    ax[0].legend(courses, fontsize=8)
     ax[1].plot(x_scaled.T)
     ax[1].set_title('Scaled features')
-    ax[1].legend(courses)
+    ax[1].legend(courses, fontsize=8)
     ax[0].set_xlabel('Student id')
     ax[0].set_ylabel('Score')
     ax[1].set_xlabel('Student id')
@@ -73,7 +73,7 @@ def gradient_descent(X, y_arr, n_features, houses):
             cost_evolution[i + 1, h] = cost(thetaT, X, y, n_train).squeeze()
         thetaT_arr[h, :] = thetaT
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(6, 4))
     ax.plot(cost_evolution, '-+')
     ax.set_xlabel('Iteration')
     ax.set_ylabel('Cost')

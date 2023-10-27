@@ -1,12 +1,12 @@
-# 42 Data Science: Logistic Regression (DSLR)
+# 42 Data Science - Logistic Regression
 
-The goal of this project is to implement a multi-class linear classifier "from scratch" using logistic regression. From scratch here means that we implement our own data statistics tools, feature scaling, cost function, and gradient descent algorithm. We use Python 3.10 and the following libraries: numpy for efficient array/matrix operations, pandas for the manipulation of the dataset, and matplotlib for the visualization.
+The goal of this project is to implement a multi-class linear classifier "from scratch" using logistic regression. From scratch here means that we implement our own data statistics tools, feature scaling, cost function, and gradient descent algorithm. We use Python 3.10 and the following libraries: numpy for efficient array/matrix operations, pandas for the manipulation of the csv dataset, and matplotlib for the visualization.
 
 ## The story
 
 The Sorting Hat of the infamous Hogwarts school of wizards is not longer working and cannot fulfill his role of sorting the students into the four houses: _Ravenclaw_, _Gryffindor_, _Slytherin_, and _Hufflepuff_. We are provided a dataset from the previous years containing the scores of 1600 students across 13 fields, and the houses they were assigned to. With our muggle datascience and machine learning tools, we need to simulate a Sorting Hat to be able to sort the 400 new students into their best fitting houses based on their scores.
 
-## Task 1: Data Analysis
+## Data Analysis
 
 We create a program for computing basic statistics of our training dataset. For each of the 13 courses/fields, we compute the number of data points (count), mean score, standard deviation, minimum, maximum, median, first and third quartile. Note that this program is basically a re-implementation of the pandas builtin describe() function (that we are not allowed to use).
 
@@ -27,13 +27,13 @@ Min    -24370.000000  -966.740546   -10.295663  ...                  -3.313676  
 Max    104956.000000  1016.211940    11.612895  ...                   3.056546  -225.428140   279.070000
 ```
 
-We note the wide discrepancy of the score ranges used in different courses. This already gives us a hint that feature scaling will be crucial for the convergence of the gradient descent.
+We note the wide discrepancy of the score ranges used in different courses. This already gives us a hint that feature scaling will be necessary for the convergence of the gradient descent.
 
-## Task 2: Data Visualization
+## Data Visualization
 
 ### Histograms of score distribution
 
-To get a better sense of the score distribution in the different courses, and across the 4 houses, we implement a stacked histogram array. The output histogram is saved in the _figures_ directory
+To get a better sense of the score distribution in the different courses, and across the 4 houses, we produce a stacked histogram array. The output histogram is saved in the _figures_ directory.
 
 ```sh
 python src/histogram.py
@@ -55,15 +55,22 @@ python src/pair_plot.py
 
 We observe above the first 20 pair plots. Let's first focus on the pair plot corresponding to the two courses identified above as having a homogeneous score distribution across the different houses: _Arithmancy_ - _Care of Magical Creatures_. The 4 clouds of points are fully superimposed and do not allow to discriminate between their corresponding 4 houses. We thus discard those two features from the dataset. We also notice that two features are perfectly (anti-)correlated and thus fully redundant: _Astronomy_ and _Defense Against the Dark Arts_. We remove the _Astronomy_ feature from our dataset.
 
-## Task 3: Logistic Regression
+## Logistic Regression
 
-To implement our multi-class linear classifier, we follow the procedure and notation of the [Coursera Machine Learning](https://www.coursera.org/learn/machine-learning?specialization=machine-learning-introduction) course by Andrew Ng.
+To implement our multi-class linear classifier, we follow the procedure and notation of the [Coursera Machine Learning](https://www.coursera.org/learn/machine-learning?specialization=machine-learning-introduction) course by Andrew Ng. Because we do not have access to the true houses corresponding to the students in the test set (only revealed during project evaluation), we need to split our training set into two subsets to validate our procedure. 80% of the students are randomly sampled from the original train dataset and placed into a new training set, and the remaining 20% into a "dummy" test set. The actual house labels are moved from the new test set into an _expected_result_ csv file. These different files are generated into the _validation_datasets_ folder with the following command:
+
+```sh
+python src/generate_validation_datasets.py
+```
 
 ### Data cleaning and feature scaling
 
-From our training set, we remove the students for which some scores are missing. We retain $n = 1300$ students of the original 1600. Let $m = 10$ be the number of remaining features (course scores), and $x_ij$ the score in course $i$ of student $j$.
 
-The range of score being widely different from one course to another, it is important for the convergence of the gradient descent that we scale our features so they have similar means and standard variations. This normalization is performed as $x_{ij} = \frac{x_{ij} - \mathrm{mean}(x_{ij})}{\mathrm{std}(x_{ij})}$, where the mean and standard deviation are computed over the $j = 1$ to $n$ students. 
+From our training set, we remove the students for which some scores are missing. We retain $n = 1061$ students of the original 1280. Let $m = 10$ be the number of remaining features (course scores), and $x_{ij}$ the score in course $i$ of student $j$.
+
+The range of score being widely different from one course to another, it is important for the convergence of the gradient descent that we scale our features so they have similar means and standard variations. This normalization is performed as $x_{ij} = \frac{x_{ij} - \mathrm{mean}(x_{ij})}{\mathrm{std}(x_{ij})}$, where the mean and standard deviation are computed over the $j = 1$ to $n$ students. The orginal and scaled features are shown in the figure below:
+
+![features](./figures/features.png)
 
 ### Prediction
 
@@ -84,7 +91,7 @@ The logistic function is appropriate to separate data into two categories, depen
 
 The cost function $J(\mathbf{\theta})$ tells us, for a given set of weights $\mathbf{\theta}$, how well our estimation $\mathbf{\hat{y}}$ fits the labels $\mathbf{y}$. In linear regression, such cost function is usually as simple as the average of the squared distance between $\mathbf{\hat{y}}$ and $\mathbf{y}$. However, it can be shown that a cost function of this form is unsuited for logistic regression as it presents many local minima. Instead, a better suited cost function is computed as:
 $$J(\mathbf{\theta}) = -\frac{1}{m} \sum_{j = 1}^{n} [\ y_j \mathrm{log}(\hat{y}_j)  + (1 - y_j) \mathrm{log}(1 - \hat{y}_j) ]\ $$
-$$= \mathrm{log} (\mathbf{\hat{y}}) \mathbf{y^T} + \mathrm{log} (1 - \mathbf{\hat{y}}) (1 - \mathbf{y^T}) $$
+$$= -\frac{1}{m} [\ \mathrm{log} (\mathbf{\hat{y}}) \mathbf{y^T} + \mathrm{log} (1 - \mathbf{\hat{y}}) (1 - \mathbf{y^T}) ]\ $$
 with $\mathbf{\hat{y}} = h(\mathbf{\theta^T X})$.
 
 ### Gradient descent
@@ -101,15 +108,40 @@ $$\theta_i := \theta_i - \alpha \frac{\partial J}{\partial \theta_i}$$
 for $i = 0$ to $m$, or
 $$\mathbf{\theta} := \mathbf{\theta} -\alpha \mathbf{\nabla} J(\mathbf{\theta})$$
 using matrix notation.
-$\alpha$ is a parameter that controls the size of the steps. $\alpha$ should be small enough to ensure stability, i.e., to guarantee that each step we take reduces the value of the cost function. But $\alpha$ should also be large enough to ensure convergence towards the minimum in a reasonable time. In practice, we test various $\alpha$ values across several order of magnitudes and look at the evolution of the cost function $J(\mathbf{\theta})$ along iterations. A typical converging cost function looks line the ones below ($\alpha$=0.5, 200 iterations):
+$\alpha$ is a parameter that controls the size of the steps. $\alpha$ should be small enough to ensure stability, i.e., to guarantee that each step we take reduces the value of the cost function. But $\alpha$ should also be large enough to ensure convergence towards the minimum in a reasonable time. In practice, we test various $\alpha$ values across several order of magnitudes and look at the evolution of the cost function $J(\mathbf{\theta})$ along iterations. For a converging gradient descent, a typical evolution of the cost function looks like the one below ($\alpha$=0.5, 150 iterations):
 
-fig here.
+![cost evolution](./figures/cost_evolution.png)
 
-Note that this figure shows the convergence of the 4 classifiers corresponding to the 4 houses
-The weights of 4 classifiers are saved into a file as well as the scaling values (mean and std) that are used to normalize the raw student scores.
+Note that this figure shows the convergence of the 4 gradient descents corresponding to the 4 different classifiers (4 houses) that we train. The weights $\mathbf{\theta}$ of the 4 classifiers are saved into a _npz_ binary file along with the feature scaling parameters (mean and standard deviation of course scores).
 
-## Task 4: Application to the test set:
+The training of the classifiers is performed with the following command:
 
-forward prop appl to test set.
+```sh
+python src/logreg_train.py --valid
+```
+for the training subset used for our validation procedure, or
+```sh
+python src/logreg_train.py
+```
+for the full training dataset.
 
+### Application to the test set
 
+To make a prediction on the test set, we first load the trained weights $\mathbf{\theta}$ of the 4 classifiers, and the feature scaling parameters. We load our test set and apply the same feature selection and scaling that we used on the train set. For each classifier, we compute the estimated probabilities of belonging to the corresponding house using the logistic regression formula $\mathbf{\hat{y}} = h(\mathbf{\theta^T X})$. We then assign each student with the house that shows the highest probability and save the results in the _houses.csv_ file.
+
+```sh
+python src/logreg_predict --valid
+```
+for the test set of validation procedure, or
+```sh
+python src/logreg_predict
+```
+for the real test set.
+
+Finally, to assess the accuracy of our procedure on the validation datasets, we compute the percentage of matching names between the predicted (__houses.csv__) and true (__expected_result.csv__) houses:
+
+```sh
+python src/assess_accuracy.py
+```
+
+Depending on the random sampling instance of the train and test validation subsets, the accuracy seem to oscillate between 97% and 99%. accuracy.
