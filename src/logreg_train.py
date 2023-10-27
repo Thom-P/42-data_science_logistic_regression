@@ -6,24 +6,24 @@ import matplotlib.pyplot as plt
 from my_statistics import ft_mean, ft_std
 
 
-# Sigmoid aka logistic function
-def h_theta(thetaT, X):  # sigmoid of thetaT * X (@ for mat multiplication)
+def h_theta(thetaT, X):
+    '''Sigmoid aka logistic function of thetaT * X'''
     return 1 / (1 + np.exp(-thetaT @ X))
 
 
-# Cost function
 def cost(thetaT, X, y, n_student):
+    '''Cost function'''
     return -1 / n_student * (np.log(h_theta(thetaT, X)) @ y.T +
                              np.log(1 - h_theta(thetaT, X)) @ (1 - y.T))
 
 
-# Gradient of the cost function
 def grad(thetaT, X, y, n_student):
+    '''Gradient of the cost function'''
     return 1 / n_student * (h_theta(thetaT, X) - y) @ X.T
 
 
 def scale_features(df_train, courses, n_features):
-    '''Extract and scale features x (scores)'''
+    '''Extract and scale features (scores)'''
     x = df_train[courses].to_numpy().transpose()
 
     x_means = np.empty(n_features)
@@ -34,34 +34,38 @@ def scale_features(df_train, courses, n_features):
         x_stds[i_row] = ft_std(x[i_row, :])
         x_scaled[i_row, :] = (x[i_row, :] - x_means[i_row]) / x_stds[i_row]
 
-    '''
-    fig, ax = plt.subplots(1, 2)
+    fig, ax = plt.subplots(1, 2, figsize=(12, 6))
     ax[0].plot(x.T)
     ax[0].set_title('Unscaled features')
     ax[0].legend(courses)
     ax[1].plot(x_scaled.T)
     ax[1].set_title('Scaled features')
     ax[1].legend(courses)
+    ax[0].set_xlabel('Student id')
+    ax[0].set_ylabel('Score')
+    ax[1].set_xlabel('Student id')
+    ax[1].set_ylabel('Score')
     fig.savefig(os.path.join('figures', 'features.png'))
-    '''
+
     # Augment feature matrix to allow for constant weight theta_0
     X = np.vstack((np.ones((1, x_scaled.shape[1])), x_scaled))
 
     return X, x_means, x_stds
 
 
-def gradient_descent(X, y_arr, n_features):
+def gradient_descent(X, y_arr, n_features, houses):
+    '''Gradient descent algorithm'''
     # Initialize 4 thetaT with random coeffs
     thetaT_arr = np.random.rand(4, n_features + 1)
     #  +1 for constant weight theta0
     n_train = X.shape[1]
 
     alpha = 0.5  # learning rate
-    n_iter = 500
+    n_iter = 150
     cost_evolution = np.empty((n_iter + 1, 4))
 
     for h in range(4):
-        y = y_arr[h, :].reshape(1, -1) # need reshape to counter auto squeeze
+        y = y_arr[h, :].reshape(1, -1)  # need reshape to counter auto squeeze
         thetaT = thetaT_arr[h, :].reshape(1, -1)
         cost_evolution[0, h] = cost(thetaT, X, y, n_train).squeeze()
         for i in range(n_iter):
@@ -71,12 +75,17 @@ def gradient_descent(X, y_arr, n_features):
 
     fig, ax = plt.subplots()
     ax.plot(cost_evolution, '-+')
+    ax.set_xlabel('Iteration')
+    ax.set_ylabel('Cost')
+    ax.legend(houses)
+    ax.set_title('Cost evolution')
     fig.savefig(os.path.join('figures', 'cost_evolution.png'))
 
     return thetaT_arr
 
 
 def main(argv):
+    '''Train classifiers on train dataset'''
     try:
         if len(argv) == 1:
             data_dir = 'datasets'  # train on original train dataset
@@ -125,7 +134,7 @@ def main(argv):
         for h, house in enumerate(houses):
             y_arr[h, :] = np.where(df_train['Hogwarts House'] == house, 1., 0.)
 
-        thetaT_arr = gradient_descent(X, y_arr, n_features)
+        thetaT_arr = gradient_descent(X, y_arr, n_features, houses)
 
         # Save the coeffs and scaling params in binary file
         np.savez(
