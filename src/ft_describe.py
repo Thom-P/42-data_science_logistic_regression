@@ -9,7 +9,7 @@ def main(argv):
     """Load csv into dataframe and compute various statistics on the columns
     containing float numbers. This function simulates the describe() builtin"""
     try:
-        assert len(argv) == 2 and argv[1], "need csv dataset as single parameter."
+        assert len(argv) == 2 and argv[1], "need one csv dataset as parameter."
         df = pd.read_csv(argv[1], index_col=0)
         myDict = {'Count': ft_count, 'Mean': ft_mean, 'Std': ft_std,
                   'Min': ft_min, '25%': ft_quartile1, '50%': ft_median,

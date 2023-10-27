@@ -59,7 +59,8 @@ def main(argv):
         # Save predictions as csv
         df_prediction = pd.DataFrame([houses[ind] for ind in house_ind_est],
                                      columns=['Hogwarts House'])
-        print(f'Prediction completed, saving results in {data_dir}/houses.csv...')
+        print(f'House prediction completed, '
+              f'saving to {data_dir}/houses.csv...')
         df_prediction.to_csv(os.path.join(data_dir, 'houses.csv'),
                              index_label='Index')
         return 0
