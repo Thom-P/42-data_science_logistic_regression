@@ -47,14 +47,20 @@ def main():
     '''Split original train dataset into subsets for validation'''
     try:
         random.seed(13)  # to keep things reproducible for now
+        print('Reading original train dataset...')
         df = pd.read_csv(
             os.path.join('datasets', 'dataset_train.csv'), index_col=0
         )
 
         validation_dir = 'validation_datasets'
         if not os.path.exists(validation_dir):
+            print('Creating validation_datasets directory...')
             os.makedirs(validation_dir)
+        print('Splitting the original train dataset into two subsets:'
+              ' training (80%) and test(20%)...')
         df_train, df_test, df_result = split_dataset(df)
+        print('Saving the new datasets as well as expected test results '
+              'in the validation_datasets directory...')
         save_validation_datasets(validation_dir, df_train, df_test, df_result)
 
     except Exception as err:
