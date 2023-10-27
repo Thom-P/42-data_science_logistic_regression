@@ -137,6 +137,7 @@ def main(argv):
         thetaT_arr = gradient_descent(X, y_arr, n_features, houses)
 
         # Save the coeffs and scaling params in binary file
+        print(f'Training completed, saving weights in {data_dir}...')
         np.savez(
             os.path.join(data_dir, 'weights_theta'),
             thetaT_arr=thetaT_arr, x_means=x_means, x_stds=x_stds
