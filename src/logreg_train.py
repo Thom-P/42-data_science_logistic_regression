@@ -13,8 +13,8 @@ def h_theta(thetaT, X):  # sigmoid of thetaT * X (@ for mat multiplication)
 
 # Cost function
 def cost(thetaT, X, y, n_student):
-    return -1 / n_student * np.log(h_theta(thetaT, X)) @ y.T +\
-        np.log(1 - h_theta(thetaT, X)) @ (1 - y.T)
+    return -1 / n_student * (np.log(h_theta(thetaT, X)) @ y.T +
+                             np.log(1 - h_theta(thetaT, X)) @ (1 - y.T))
 
 
 # Gradient of the cost function
