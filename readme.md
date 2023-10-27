@@ -94,7 +94,7 @@ For each of the 4 classifiers, we are looking at computing a set of weights $\ma
 The gradient $\frac{\partial J}{\partial \theta_i}$ of the above cost function can be shown to be equal to:
 $$\frac{\partial J}{\partial \theta_i} = \frac{1}{n} \sum_{j=1}^{n} (\hat{y}_j - y_j) X_{ij}$$
 for $i = 0$ to $m$, or
-$$\mathbf{\nabla} J(\mathbf{\theta}) = \frac{1}{n} \mathbf{X} [\ \mathbf{\hat{y}} - \mathbf{y} ]\^T$$
+$$\mathbf{\nabla} J(\mathbf{\theta}) = \frac{1}{n} \mathbf{X} [\ \mathbf{\hat{y}} - \mathbf{y} ]\ ^T$$
 using matrix notation.
 The iterative descent algorithm consists of iteratively updating $\mathbf{\theta}$:
 $$\theta_i := \theta_i - \alpha \frac{\partial J}{\partial \theta_i}$$

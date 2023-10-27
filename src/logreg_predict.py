@@ -11,8 +11,8 @@ def main(argv):
         if len(argv) == 1:
             data_dir = 'datasets'
         else:
-            assert len(argv) == 2 and argv[1] == "--fake", "only supported option is --fake to train on fake dataset"
-            data_dir = 'fake_datasets'
+            assert len(argv) == 2 and argv[1] == "--valid", "use --valid to make prediction on validation dataset"
+            data_dir = 'validation_datasets'
 
         with np.load(os.path.join(data_dir, 'weights_theta.npz')) as data:
             thetaT = data['thetaT_arr']

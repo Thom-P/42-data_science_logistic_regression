@@ -2,8 +2,8 @@ import os, sys
 import pandas as pd
 import numpy as np
 
-df_predict = pd.read_csv(os.path.join('fake_datasets', 'houses.csv'), index_col=0)
-df_truth = pd.read_csv(os.path.join('fake_datasets', 'expected_result.csv'), index_col=0)
+df_predict = pd.read_csv(os.path.join('validation_datasets', 'houses.csv'), index_col=0)
+df_truth = pd.read_csv(os.path.join('validation_datasets', 'expected_result.csv'), index_col=0)
 
 n_test = df_truth.shape[0] 
 accuracy = 0
