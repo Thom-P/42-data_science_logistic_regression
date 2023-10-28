@@ -46,10 +46,10 @@ def save_validation_datasets(validation_dir, df_train, df_test, df_result):
 def main():
     '''Split original train dataset into subsets for validation'''
     try:
-        random.seed(13)  # to keep things reproducible for now
+        # random.seed(13)  # to keep things reproducible
         print('Reading original train dataset...')
         df = pd.read_csv(
-            os.path.join('datasets', 'dataset_train.csv'), index_col=0
+            'datasets/dataset_train.csv', index_col=0
         )
 
         validation_dir = 'validation_datasets'

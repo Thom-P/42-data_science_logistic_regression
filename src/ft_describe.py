@@ -22,6 +22,7 @@ def main(argv):
             if column_np.size == 0:  # if empty, skip
                 continue
             stats_df[column] = [myDict[key](column_np) for key in myDict]
+        # pd.set_option('display.max_columns', None)
         print(stats_df)
         #  print(df.describe())  #  for comparison with lib equivalent
         return 0

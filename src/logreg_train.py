@@ -45,7 +45,7 @@ def scale_features(df_train, courses, n_features):
     ax[0].set_ylabel('Score')
     ax[1].set_xlabel('Student id')
     ax[1].set_ylabel('Score')
-    fig.savefig(os.path.join('figures', 'features.png'))
+    fig.savefig('figures/features.png')
 
     # Augment feature matrix to allow for constant weight theta_0
     X = np.vstack((np.ones((1, x_scaled.shape[1])), x_scaled))
@@ -79,7 +79,7 @@ def gradient_descent(X, y_arr, n_features, houses):
     ax.set_ylabel('Cost')
     ax.legend(houses)
     ax.set_title('Cost evolution')
-    fig.savefig(os.path.join('figures', 'cost_evolution.png'))
+    fig.savefig('figures/cost_evolution.png')
 
     return thetaT_arr
 
@@ -126,6 +126,7 @@ def main(argv):
         print(f'Using {n_train} students out of {n_before}:'
               f' {n_before - n_train} have missing data.')
 
+        plt.style.use('seaborn-v0_8-colorblind')
         X, x_means, x_stds = scale_features(df_train, courses, n_features)
 
         # Extract labels y:
