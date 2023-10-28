@@ -41,7 +41,7 @@ python src/histogram.py
 
 ![stacked histograms](./figures/histogram.png)
 
-We observe that the course _Care of Magical Creatures_ has the most homogeneous score distribution across the 4 houses, closely followed by the _Arithmancy_ course. The scores in these two discipline likely have very little to no effect in the house selection process.
+We observe that the course _Care of Magical Creatures_ has the most homogeneous score distribution across the 4 houses, closely followed by the _Arithmancy_ course. The scores in these two discipline likely have very little to no effect in the house attribution process.
 
 ### Pair plots
 
@@ -53,7 +53,7 @@ python src/pair_plot.py
 
 ![pair plots](./figures/pair_plot1.png)
 
-We observe above the first 20 pair plots. Let's first focus on the pair plot corresponding to the two courses identified above as having a homogeneous score distribution across the different houses: _Arithmancy_ - _Care of Magical Creatures_. The 4 clouds of points are fully superimposed and do not allow to discriminate between their corresponding 4 houses. We thus discard those two features from the dataset. We also notice that two features are perfectly (anti-)correlated and thus fully redundant: _Astronomy_ and _Defense Against the Dark Arts_. We remove the _Astronomy_ feature from our dataset.
+We observe above the first 20 pair plots. Let's first focus on the pair plot corresponding to the two courses identified previously as having a homogeneous score distribution across the different houses: _Arithmancy_ - _Care of Magical Creatures_. The 4 clouds of points are fully superimposed and do not allow to discriminate between their corresponding 4 houses. We thus discard those two features from the dataset. We also notice that two features are perfectly (anti-)correlated and thus fully redundant: _Astronomy_ and _Defense Against the Dark Arts_. We remove the _Astronomy_ feature from our dataset.
 
 ## Logistic Regression
 
@@ -66,37 +66,38 @@ python src/generate_validation_datasets.py
 ### Data cleaning and feature scaling
 
 
-From our training set, we remove the students for which some scores are missing. We retain $n = 1061$ students of the original 1280. Let $m = 10$ be the number of remaining features (course scores), and $x_{ij}$ the score in course $i$ of student $j$.
+From our training set, we remove the students for which some scores are missing. We retain $n = 1061$ students of the original $1280$. Let $m = 10$ be the number of remaining features (course scores), and $x_{ij}$ the score in course $i$ of student $j$.
 
-The range of score being widely different from one course to another, it is important for the convergence of the gradient descent that we scale our features so they have similar means and standard variations. This normalization is performed as $x_{ij} = \frac{x_{ij} - \mathrm{mean}(x_{ij})}{\mathrm{std}(x_{ij})}$, where the mean and standard deviation are computed over the $j = 1$ to $n$ students. The orginal and scaled features are shown in the figure below:
+The range of score being widely different from one course to another, it is important for the convergence of the gradient descent that we scale our features so they have similar means and standard deviations. This normalization is performed as $x_{ij} = \frac{x_{ij} - \mathrm{mean}(x_{ij})}{\mathrm{std}(x_{ij})}$, where the mean and standard deviation are computed over the $j = 1$ to $n$ students. The orginal and scaled features are shown in the figure below:
 
 ![features](./figures/features.png)
 
 ### Prediction
 
-For a given student $j$, a prediction consists in computing an output $y_j$ (in fact several) whose value corresponds to its assigned house. 
-Let's first examine the form of linear regression prediction, as the logistic regression can be viewed as an extension of this approach. In linear regression, a set of $m + 1$ weights $\theta_i$ is used to construct a prediction output $y_j$ as a linear combination of the features:
-$$y_j = \theta_0 + \theta_1 x_{1j} + \theta_2 x_{2j} + ... + \theta_m x_{mj}$$
+For a given student $j$, a prediction consists in computing an output $\hat{y}_j$ (in fact several) whose value corresponds to its assigned house. 
+Let's first examine the form of linear regression prediction, as the logistic regression can be viewed as an extension of this approach. In linear regression, a set of $m + 1$ weights $\theta_i$ is used to construct a prediction output $\hat{y}^{\mathrm{lin}}_j$ as a linear combination of the features:
+$$\hat{y}^{\mathrm{lin}}_j = \theta_0 + \theta_1 x_{1j} + \theta_2 x_{2j} + ... + \theta_m x_{mj}$$
 or in the more compact matrix form: 
-$$\mathbf{\hat{y}} = \mathbf{\theta^T X}$$
-where the first row of $\mathbf{X}$ of size $(m + 1, n)$ is a row vector of $n$ ones $[1, 1, ..., 1]$ to allow the addition of the constant term $\theta_0$, and the rest of the matrix contains the scaled $x_{ij}$ elements. $\theta$ is a column vector of the $m + 1$ weights to be tuned/learned, and $\mathbf{\hat{y}}$ a row vector of the $n$ predictions.
-The output values $y_j$ of linear regression are unbounded. However, in logistic regression, these values should be bounded between 0 and 1 as $y_j$ is interpreted as the probability of a data point (a student) belonging to a given class (a house).
+$$\mathbf{\hat{y}^{\mathrm{lin}}} = \mathbf{\theta^T X}$$
+where the first row of $\mathbf{X}$ of size $(m + 1, n)$ is a row vector of $n$ ones $[1, 1, ..., 1]$ to allow the addition of the constant term $\theta_0$, and the rest of the matrix contains the scaled $x_{ij}$ elements. $\mathbf{\theta}$ is a column vector of the $m + 1$ weights to be learnt, and $\mathbf{\hat{y}^{\mathrm{lin}}}$ a row vector of the $n$ predictions.
+The output values $\hat{y}^{\mathrm{lin}}_j$ of linear regression are unbounded. However, in logistic regression, these values should be bounded between 0 and 1 as $y_j$ is interpreted as the probability of a data point (a student) belonging to a given class (a house).
 The prediction of logistic regression is therefore expressed as:
 $$\mathbf{\hat{y}} = h(\mathbf{\theta^T X})$$
 where $h(x) = \frac{1}{1 + e^{-x}}$ is called the logistic (or sigmoid) function, and whose output is bounded between 0 and 1.
 
-The logistic function is appropriate to separate data into two categories, depending whether its output is closer to 0 or 1. However, in our case, the data need to be sorted into 4 different classes (houses). This multi-class classification problem can be solved using the one vs all approach, which requires as many classifier as there are classes. Each classifier consists of a set of $m + 1$ weights $\theta_i$ for which a prediction $y_j$ is interpreted as the probability of data point (student) $j$ belonging to a certain class (house). To get our final prediction of which house a student belongs to, we select the house for which the estimated probability is the highest. From our training dataset, we create four different objective row vectors $\mathbf{y}$ consisting of 1 or 0 depending on whether or not each student belongs to the corresponding house. These vectors form the "labels" of our training dataset for our supervised learning approach.
+The logistic function is appropriate to separate data into two categories, depending whether its output is closer to 0 or 1. However, in our case, the data need to be sorted into 4 different classes (houses). This multi-class classification problem can be solved using the one vs all approach, which requires as many classifiers as there are classes. Each classifier consists of a set of $m + 1$ weights $\theta_i$ for which a prediction $y_j$ is interpreted as the probability of data point (student) $j$ belonging to a certain class (house). To get our final prediction of which house a student belongs to, we select the house for which the estimated probability is the highest.
 
 ### Cost function
 
-The cost function $J(\mathbf{\theta})$ tells us, for a given set of weights $\mathbf{\theta}$, how well our estimation $\mathbf{\hat{y}}$ fits the labels $\mathbf{y}$. In linear regression, such cost function is usually as simple as the average of the squared distance between $\mathbf{\hat{y}}$ and $\mathbf{y}$. However, it can be shown that a cost function of this form is unsuited for logistic regression as it presents many local minima. Instead, a better suited cost function is computed as:
+From our training dataset, we create four different objective row vectors $\mathbf{y}$ consisting of 1 or 0 depending on whether or not each student belongs to the corresponding house. These vectors form the "labels" of our training dataset that our supervised learning approach should try to fit.
+The cost function $J(\mathbf{\theta})$ tells us, for a given set of weights $\mathbf{\theta}$, how well our estimation $\mathbf{\hat{y}}$ fits the labels $\mathbf{y}$. In linear regression, such cost function is usually the average of the squared distance between $\mathbf{\hat{y}}$ and $\mathbf{y}$. However, it can be shown that a cost function of this form is unsuited for logistic regression as it presents many local minima. Instead, a better suited cost function is computed as:
 $$J(\mathbf{\theta}) = -\frac{1}{m} \sum_{j = 1}^{n} [\ y_j \mathrm{log}(\hat{y}_j)  + (1 - y_j) \mathrm{log}(1 - \hat{y}_j) ]\ $$
 $$= -\frac{1}{m} [\ \mathrm{log} (\mathbf{\hat{y}}) \mathbf{y^T} + \mathrm{log} (1 - \mathbf{\hat{y}}) (1 - \mathbf{y^T}) ]\ $$
 with $\mathbf{\hat{y}} = h(\mathbf{\theta^T X})$.
 
 ### Gradient descent
 
-For each of the 4 classifiers, we are looking at computing a set of weights $\mathbf{\theta}$ that minimizes the cost function $J(\mathbf{\theta})$. $J(\mathbf{\theta})$ can be seen as a concave hyper-surface of which we aim to reach the bottom. The idea of gradient descent is to iteratively walk downhill in the direction of the steepest slope (i.e. opposite the gradient direction).
+For each of the 4 classifiers, we are looking at computing a set of weights $\mathbf{\theta}$ that minimizes the cost function $J(\mathbf{\theta})$. $J(\mathbf{\theta})$ can be seen as a concave hyper-surface of which we aim to reach the bottom. The idea of gradient descent is to iteratively walk downhill in the direction of the steepest slope (i.e., opposite the gradient direction).
 
 The gradient $\frac{\partial J}{\partial \theta_i}$ of the above cost function can be shown to be equal to:
 $$\frac{\partial J}{\partial \theta_i} = \frac{1}{n} \sum_{j=1}^{n} (\hat{y}_j - y_j) X_{ij}$$
@@ -130,18 +131,18 @@ for the full training dataset.
 To make a prediction on the test set, we first load the trained weights $\mathbf{\theta}$ of the 4 classifiers, and the feature scaling parameters. We load our test set and apply the same feature selection and scaling that we used on the train set. For each classifier, we compute the estimated probabilities of belonging to the corresponding house using the logistic regression formula $\mathbf{\hat{y}} = h(\mathbf{\theta^T X})$. We then assign each student with the house that shows the highest probability and save the results in the _houses.csv_ file.
 
 ```sh
-python src/logreg_predict --valid
+python src/logreg_predict.py --valid
 ```
-for the test set of validation procedure, or
+for the test set of the validation procedure, or
 ```sh
-python src/logreg_predict
+python src/logreg_predict.py
 ```
 for the real test set.
 
-Finally, to assess the accuracy of our procedure on the validation datasets, we compute the percentage of matching names between the predicted (__houses.csv__) and true (__expected_result.csv__) houses:
+Finally, to assess the accuracy of our procedure on the validation datasets, we compute the percentage of matching names between the predicted (_houses.csv_) and true (_expected_result.csv_) houses:
 
 ```sh
 python src/assess_accuracy.py
 ```
 
-Depending on the random sampling instance of the train and test validation subsets, the accuracy seem to oscillate between 97% and 99%. accuracy.
+Depending on the random sampling instance of the train and test validation subsets, the house attribution accuracy seem to oscillate between 97% and 99%.
