@@ -3,7 +3,6 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
 
 
 def make_scatter_plots(house_dfs, course_pairs, ax_array, house_names, colors):
@@ -26,9 +25,8 @@ def make_scatter_plots(house_dfs, course_pairs, ax_array, house_names, colors):
 def make_figures(courses, house_names, house_dfs):
     """Prepare 4 figures to draw all the scatter plots in matrix form
     for better visibility"""
-    colors = list(mcolors.BASE_COLORS.keys())
-
-    plt.style.use('dark_background')
+    plt.style.use('seaborn-v0_8-colorblind')
+    colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
     figs, axes = zip(*[plt.subplots(5, 4, figsize=(19, 10))
                      for i in range(4)])
     ax_array = np.concatenate(tuple(map(np.ndarray.flatten, axes)))

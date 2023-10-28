@@ -3,6 +3,8 @@ import numpy as np
 
 def ft_count(nums: np.array):
     """Count the number of items in array"""
+    if not check_input(nums):
+        return None
     count = 0
     for num in nums:
         count += 1
@@ -11,11 +13,15 @@ def ft_count(nums: np.array):
 
 def ft_min(nums: np.array):
     """Return min element"""
+    if not check_input(nums):
+        return None
     return sorted(nums)[0]
 
 
 def ft_max(nums: np.array):
     """Return max element"""
+    if not check_input(nums):
+        return None
     return sorted(nums)[-1]
 
 
@@ -123,5 +129,5 @@ def check_input(nums: np.array):
             "need a numpy array of single or double."
         return True
     except AssertionError as err:
-        print(err)
+        print(f'{type(err).__name__}: {err}')
         return False

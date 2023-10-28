@@ -2,23 +2,21 @@ import sys
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
 
 
 def make_figure(courses, house_names, house_dfs):
     """Prepare and make the scatter plot of Astronomy vs Defense"""
-    colors = list(mcolors.BASE_COLORS.keys())
-
-    plt.style.use('dark_background')
-    fig, ax = plt.subplots(figsize=(19, 10))
+    plt.style.use('seaborn-v0_8-colorblind')
+    colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+    fig, ax = plt.subplots(figsize=(10, 5))
     for h, house_df in enumerate(house_dfs):
         house_df.plot.scatter(courses[0], courses[1], ax=ax, c=colors[h],
-                              label=house_names[h], s=100, alpha=0.5)
+                              label=house_names[h], s=100)
     ax.set_title(f'{courses[0]} - {courses[1]}')
     ax.set_xlabel('Score 1')
     ax.set_ylabel('Score 2')
 
-    fig.savefig('./figures/scatter_plot.png')
+    fig.savefig('figures/scatter_plot.png')
     # plt.show()
 
 
