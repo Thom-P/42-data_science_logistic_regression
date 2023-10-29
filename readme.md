@@ -75,17 +75,19 @@ The range of score being widely different from one course to another, it is impo
 ### Prediction
 
 For a given student $j$, a prediction consists in computing an output $\hat{y}_ j$ (in fact several) whose value corresponds to its assigned house. 
-Let's first examine the form of linear regression prediction, as the logistic regression can be viewed as an extension of this approach. In linear regression, a set of $m + 1$ weights $\theta_i$ is used to construct a prediction output $\hat{y}^{\mathrm{lin}} _j$ as a linear combination of the features:
-$$\hat{y}^{\mathrm{lin}} _j = \theta_0 + \theta_1 x_{1j} + \theta_2 x_{2j} + ... + \theta_m x_{mj}$$
+Let's first examine the form of linear regression prediction, as the logistic regression can be viewed as an extension of this approach. In linear regression, a set of $m + 1$ weights $\theta_i$ is used to construct a prediction output $`\hat{y}^{\mathrm{lin}}_j`$ as a linear combination of the features:
+```math
+\hat{y}^{\mathrm{lin}}_j = \theta_0 + \theta_1 x_{1j} + \theta_2 x_{2j} + ... + \theta_m x_{mj}$$
+```
 or in the more compact matrix form: 
 $$\mathbf{\hat{y}^{\mathrm{lin}}} = \mathbf{\theta^T X}$$
 where the first row of $\mathbf{X}$ of size $(m + 1, n)$ is a row vector of $n$ ones $[1, 1, ..., 1]$ to allow the addition of the constant term $\theta_0$, and the rest of the matrix contains the scaled $x_{ij}$ elements. $\mathbf{\theta}$ is a column vector of the $m + 1$ weights to be learnt, and $\mathbf{\hat{y}^{\mathrm{lin}}}$ a row vector of the $n$ predictions.
-The output values $\hat{y}^{\mathrm{lin}} _j$ of linear regression are unbounded. However, in logistic regression, these values should be bounded between 0 and 1 as $y_j$ is interpreted as the probability of a data point (a student) belonging to a given class (a house).
+The output values $\hat{y}^{\mathrm{lin}} _j$ of linear regression are unbounded. However, in logistic regression, these values should be bounded between 0 and 1 as $\hat{y}_j$ is interpreted as the probability of a data point (a student) belonging to a given class (a house).
 The prediction of logistic regression is therefore expressed as:
 $$\mathbf{\hat{y}} = h(\mathbf{\theta^T X})$$
 where $h(x) = \frac{1}{1 + e^{-x}}$ is called the logistic (or sigmoid) function, and whose output is bounded between 0 and 1.
 
-The logistic function is appropriate to separate data into two categories, depending whether its output is closer to 0 or 1. However, in our case, the data need to be sorted into 4 different classes (houses). This multi-class classification problem can be solved using the one vs all approach, which requires as many classifiers as there are classes. Each classifier consists of a set of $m + 1$ weights $\theta_i$ for which a prediction $y_j$ is interpreted as the probability of data point (student) $j$ belonging to a certain class (house). To get our final prediction of which house a student belongs to, we select the house for which the estimated probability is the highest.
+The logistic function is appropriate to separate data into two categories, depending whether its output is closer to 0 or 1. However, in our case, the data need to be sorted into 4 different classes (houses). This multi-class classification problem can be solved using the one vs all approach, which requires as many classifiers as there are classes. Each classifier consists of a set of $m + 1$ weights $\theta_i$ for which a prediction $\hat{y}_j$ is interpreted as the probability of data point (student) $j$ belonging to a certain class (house). To get our final prediction of which house a student belongs to, we select the house for which the estimated probability is the highest.
 
 ### Cost function
 
@@ -100,9 +102,13 @@ with $\mathbf{\hat{y}} = h(\mathbf{\theta^T X})$.
 For each of the 4 classifiers, we are looking at computing a set of weights $\mathbf{\theta}$ that minimizes the cost function $J(\mathbf{\theta})$. $J(\mathbf{\theta})$ can be seen as a concave hyper-surface of which we aim to reach the bottom. The idea of gradient descent is to iteratively walk downhill in the direction of the steepest slope (i.e., opposite the gradient direction).
 
 The gradient $\frac{\partial J}{\partial \theta_i}$ of the above cost function can be shown to be equal to:
-$$\frac{\partial J}{\partial \theta_i} = \frac{1}{n} \sum_{j=1}^{n} (\hat{y} _j - y_j) X_{ij}$$
+```math
+\frac{\partial J}{\partial \theta_i} = \frac{1}{n} \sum_{j=1}^{n} (\hat{y}_j - y_j) X_{ij}
+```
 for $i = 0$ to $m$, or
-$$\mathbf{\nabla} J(\mathbf{\theta}) = \frac{1}{n} \mathbf{X} [\ \mathbf{\hat{y}} - \mathbf{y} ]\ ^T$$
+```math
+\mathbf{\nabla} J(\mathbf{\theta}) = \frac{1}{n} \mathbf{X} [\ \mathbf{\hat{y}} - \mathbf{y} ]\ ^T
+```
 using matrix notation.
 The iterative descent algorithm consists of iteratively updating $\mathbf{\theta}$:
 $$\theta_i := \theta_i - \alpha \frac{\partial J}{\partial \theta_i}$$
